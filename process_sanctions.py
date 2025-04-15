@@ -34,7 +34,6 @@ from tqdm.auto import tqdm  # For progress bars
 import argparse  # For command-line argument parsing
 
 # --- Configuration Constants ---
-# (Remain the same)
 INPUT_CSV_PATH = "ConList.csv"
 OUTPUT_CSV_PATH = "Structured_Sanctions_Data.csv"
 ENCODING = "utf-8"
@@ -44,7 +43,6 @@ VERBOSE_MODE = True
 
 
 # --- Helper Functions ---
-# (parse_dob_comprehensive, clean_country_string, construct_full_name, get_unique_sorted_list remain IDENTICAL)
 def parse_dob_comprehensive(dob_str):
     if pd.isna(dob_str) or str(dob_str).strip().lower() == "nan":
         return (pd.NaT, "Missing")
@@ -132,7 +130,6 @@ def get_unique_sorted_list(series):
 
 def aggregate_sanctions_data(group):
     """Aggregates data for a single Group ID (passed via groupby.apply)."""
-    # (Function remains identical to previous correct version)
     primary_row = group[group["Alias Type"] == "Primary name"].head(1)
     if primary_row.empty:
         primary_row = group[group["Alias Type"] == "Primary name variation"].head(1)
@@ -249,7 +246,6 @@ def aggregate_sanctions_data(group):
 # --- Post-Aggregation Cleaning & Check Functions ---
 def remove_lrm(df, verbose=VERBOSE_MODE):
     """Removes Left-to-Right Mark (U+200E) from string/object columns."""
-    # (Function remains identical to previous correct version)
     if verbose:
         print("  Removing LRM characters (U+200E)...")
     lrm_char = "\u200e"
@@ -351,7 +347,6 @@ def clean_all_whitespace(df, verbose=VERBOSE_MODE):
 
 def convert_metadata_dates(df, verbose=VERBOSE_MODE):
     """Converts metadata date string columns to datetime objects."""
-    # (Function remains identical to previous correct version)
     if verbose:
         print("  Converting metadata date columns...")
     date_cols_metadata = [
@@ -386,7 +381,9 @@ def standardize_countries_in_agg_col(df, columns_to_standardize, verbose=VERBOSE
         print("  Standardizing specific country names in aggregated columns...")
     processed_count = 0
 
-    # Define the exact replacements needed (Fuzzing was attempted but not successful for this task)
+    # Define a dictionary to map known variations, typos, abbreviations,
+    # historical names, and adjectival forms found in the source country/nationality
+    # fields to a standardized country name.
     country_replacement_map = {
         "Russian Federation": "Russia",
         "Russian": "Russia",
@@ -410,7 +407,7 @@ def standardize_countries_in_agg_col(df, columns_to_standardize, verbose=VERBOSE
         "United States of America": "United States",
         "Guinea-Bissau": "Guinea Bissau",
         # "Palestinian Territories": "Occupied Palestinian Territories", # These are historically and politically sensitive/different
-        # Add more known and relevant variations/typos here if discovered
+        # NOTE: Add more known and relevant variations/typos here if discovered
     }
 
     # Define the function to apply to each cell in the target columns
@@ -464,7 +461,6 @@ def standardize_countries_in_agg_col(df, columns_to_standardize, verbose=VERBOSE
 
 def run_final_checks(df, verbose=VERBOSE_MODE):
     """Performs final sanity checks on the structured DataFrame."""
-    # (Function remains identical to previous correct version)
     if not verbose:
         return True
     print("\n--- Running Final Data Sanity Checks ---")
@@ -568,7 +564,6 @@ def main(input_path=INPUT_CSV_PATH, output_path=OUTPUT_CSV_PATH, verbose=True):
         # 2. DOB Processing
         if verbose:
             print("\n[2/12] Processing Date of Birth (DOB)...")
-        # (DOB processing code remains the same)
         if "DOB" not in uk_sanctions_raw.columns:
             raise ValueError("Required 'DOB' column not found.")
         uk_sanctions_raw["DOB_raw"] = uk_sanctions_raw["DOB"].astype("string")
@@ -757,10 +752,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "-q",
         "--quiet",
-        action="store_true",  # Makes it a flag, default is False
+        action="store_true", 
         help="Run in quiet mode (suppress progress messages).",
     )
-    # Add more arguments here if needed (e.g., --delimiter)
 
     args = parser.parse_args()  # Parse command-line arguments
 
