@@ -752,7 +752,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-q",
         "--quiet",
-        action="store_true", 
+        action="store_true",
         help="Run in quiet mode (suppress progress messages).",
     )
 
